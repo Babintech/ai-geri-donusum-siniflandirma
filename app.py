@@ -2,7 +2,13 @@ from pathlib import Path
 import zipfile
 import streamlit as st
 from PIL import Image
-from classifier import WasteClassifier
+
+# Yeni modül yapısından import
+try:
+    from src.inference.classifier import WasteClassifier
+except ImportError:
+    # Geri uyumluluk: kök klasörden import et
+    from classifier import WasteClassifier
 
 # --- MODEL KONFİGÜRASYONLARI (Notebook Analiz Sonuçları) ---
 APP_DIR = Path(__file__).resolve().parent
