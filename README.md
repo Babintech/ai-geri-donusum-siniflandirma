@@ -65,10 +65,10 @@ olduğu anlamına gelmez.
 
 Eğitim pipeline'ında görülen başlıca adımlar:
 
-1. Arka planın `rembg` ile temizlenmesi
-2. Siyah zemin simülasyonu
-3. Rotation, shift ve zoom ile data augmentation
-4. `224x224` boyutlandırma ve `1/255` normalizasyonu
+- **Dosya konumu**: `model/akilli_kutu_model.keras`
+- **Boyut**: Yaklaşık 13 MB (MobileNetV2 + başlık)
+- **Framework**: TensorFlow 2.16+
+- **Python**: 3.11+
 
 Sınıf klasörleri ve veri kaynakları hakkında ayrıntılar için
 [data/README.md](data/README.md) dosyasına bakın. Üçüncü taraf veri setlerinin
@@ -150,6 +150,33 @@ prediction, confidence = classifier.predict(Image.open("waste_sample.jpg"))
 print(prediction, confidence)
 ```
 
+### Testleri Çalıştırma
+
+Birim testleri ve ön işleme kontrollerini çalıştırmak için:
+
+```bash
+# Pytest ile tüm testleri çalıştır
+pytest tests/ -v
+
+# Söz dizimi ve import doğrulaması
+python -m py_compile app.py classifier.py src/inference/classifier.py
+```
+
+### Eğitim ve Değerlendirme
+
+Modeli yeniden eğitmek veya değerlendirmek için not defteri kullanılır:
+
+```bash
+# Google Colab'da: notebooks/training_experiments.ipynb
+```
+
+Not defteri aşağıdaki bölümleri içerir:
+- Veri seti kurulumu
+- Ön işleme ve artırma
+- Model eğitimi
+- Değerlendirme
+- Sonuç görselleştirmesi
+
 ## Proje Yapısı
 
 ```text
@@ -159,9 +186,18 @@ print(prediction, confidence)
 ├── classifier.py                 # src.inference için geriye dönük uyumluluk katmanı
 ├── data/README.md
 ├── dataset/
-├── final_project_recyle.ipynb    # Eğitim ve değerlendirme notebook'u
-├── model/akilli_kutu_model.keras
-├── src/inference/classifier.py
+│   ├── cardboard/                  # Karton görüntüleri
+│   ├── glass/                      # Cam görüntüleri
+│   ├── metal/                      # Metal görüntüleri
+│   ├── paper/                      # Kağıt görüntüleri
+│   ├── plastic/                    # Plastik görüntüleri
+│   └── trash/                      # Çöp görüntüleri
+├── model/
+│   └── akilli_kutu_model.keras     # Eğitilmiş model
+├── notebooks/
+│   └── training_experiments.ipynb  # Eğitim ve deney not defteri
+├── src/
+│   └── inference/                  # Inference yardımcıları
 ├── tests/
 ├── CONTRIBUTING.md
 ├── LICENSE
@@ -169,6 +205,73 @@ print(prediction, confidence)
 ├── requirements-dev.txt
 └── runtime.txt
 ```
+
+## Tekrarlanabilirlik
+
+### Ortam Kurulumu
+
+Tüm ortamlarda tutarlı sonuçlar için:
+
+```bash
+# Sanal ortam oluştur
+python -m venv .venv
+source .venv/bin/activate  # veya .venv\Scripts\activate (Windows)
+
+# Kesin sürümlerde yükle
+pip install -r requirements.txt
+```
+
+### Dataset Hazırlama
+
+Dataset otomatik olarak `dataset/` klasöründe mevcuttur:
+
+```python
+# Not defterinde
+dataset_path = "dataset"
+# 6 sınıf klasörü otomatik yüklenir
+```
+
+### Training/Evaluation Süreci
+
+Aynı sonuçlar elde etmek için:
+
+1. Not defterini (`notebooks/training_experiments.ipynb`) açın
+2. Hücreleri sırayla çalıştırın
+3. Random seed ayarı yapılmıştır
+4. Colab ortamında (GPU) çalıştırılması önerilir
+
+### Gerekli Artifact'ler
+
+- ✅ Model dosyası: `model/akilli_kutu_model.keras` (Git LFS ile)
+- ✅ Dataset: `dataset/` klasörü (versiyon kontrollü)
+- ✅ Not defteri: `notebooks/training_experiments.ipynb` (çıktı korunur)
+
+## Gelecek Çalışmalar
+
+Potansiyel iyileştirme alanları:
+
+- **Model Performansı**: Daha ileri mimariler (EfficientNet, Vision Transformers) test edilebilir
+- **Domain Adaption**: Açık ortam ve değişken ışık koşulları için fine-tuning
+- **Real-time Deployment**: Edge cihazlara model aktarımı (TensorFlow Lite, ONNX)
+- **Ensemble Modeller**: Çoklu model kombinasyonu güvenilirliği artırabilir
+- **Sınıf Genişleme**: Yeni atık kategorileri ekleme
+- **Inference Optimizasyonu**: Model quantization ve compression
+- **Multi-modal Input**: Video veya 3D kameralardan gelen veri destekleme
+
+## Katkıda Bulunanlar
+
+### Orijinal Bitirme Projesi Katkıları
+
+| Katkılayan | Rol |
+|-----------|-----|
+| **Efe Can Kara** | Model geliştirme, eğitim, değerlendirme |
+| **Yiğit Altundağ** | Streamlit arayüzü, deployment |
+| **Sınıf Katkısı** | Veri seti derlemesi |
+| **Mehmet Yıldız** | Ek Kaggle veri seti desteği |
+
+### Babintech Bakım ve Geliştirme
+
+Proje, Babintech GitHub organizasyonuna transfer edildikten sonra, profesyonel mühendislik standartlarına uygun şekilde bakım ve geliştirilmektedir.
 
 ## Katkıda Bulunma
 
