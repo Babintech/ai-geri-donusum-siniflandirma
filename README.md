@@ -134,7 +134,7 @@ Eğitim sürecinde aşağıdaki performans elde edilmiştir:
 
 ### Model Yönetimi
 
-- **Dosya konumu**: `model/akalli_kutu_model.keras`
+- **Dosya konumu**: `model/akilli_kutu_model.keras`
 - **Boyut**: Yaklaşık 13 MB (MobileNetV2 + başlık)
 - **Framework**: TensorFlow 2.16+
 - **Python**: 3.11+
@@ -277,6 +277,18 @@ prediction, confidence = classifier.predict(image)
 print(f"Sınıf: {prediction}, Güven: {confidence:.2f}%")
 ```
 
+### Testleri Çalıştırma
+
+Birim testleri ve ön işleme kontrollerini çalıştırmak için:
+
+```bash
+# Pytest ile tüm testleri çalıştır
+pytest tests/ -v
+
+# Söz dizimi ve import doğrulaması
+python -m py_compile app.py classifier.py src/inference/classifier.py
+```
+
 ### Eğitim ve Değerlendirme
 
 Modeli yeniden eğitmek veya değerlendirmek için not defteri kullanılır:
@@ -312,7 +324,7 @@ ai-geri-donusum-siniflandirma/
 │   ├── plastic/                    # Plastik görüntüleri
 │   └── trash/                      # Çöp görüntüleri
 ├── model/
-│   └── akalli_kutu_model.keras     # Eğitilmiş model
+│   └── akilli_kutu_model.keras     # Eğitilmiş model
 ├── notebooks/
 │   └── training_experiments.ipynb  # Eğitim ve deney not defteri
 ├── src/
@@ -363,7 +375,7 @@ Aynı sonuçlar elde etmek için:
 
 ### Gerekli Artifact'ler
 
-- ✅ Model dosyası: `model/akalli_kutu_model.keras` (Git LFS ile)
+- ✅ Model dosyası: `model/akilli_kutu_model.keras` (Git LFS ile)
 - ✅ Dataset: `dataset/` klasörü (versiyon kontrollü)
 - ✅ Not defteri: `notebooks/training_experiments.ipynb` (çıktı korunur)
 
