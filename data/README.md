@@ -1,122 +1,58 @@
-# Veri Seti Dokümantasyonu
+# Veri Seti
 
-## Genel Bilgi
+## Kaynaklar
 
-Bu proje, atık sınıflandırması için geliştirilmiş bir derin öğrenme modelini eğitmek amacıyla **dengeli bir veri seti** kullanmaktadır. Veri seti, çeşitli kaynaklardan derlenmiş olup, her sınıfa ait görüntüler siyah zemin üzerinde çekilmiş olarak işlenmiştir.
+Veri seti aşağıdaki kaynaklardan derlenmiştir:
 
-## Veri Seti Kaynakları
+1. Google Drive üzerinden sınıf tarafından derlenen yerel veri seti
+2. Birden fazla Kaggle atık sınıflandırma veri seti
+3. Mehmet Yıldız'ın sağladığı ek Kaggle veri seti
 
-Veri seti aşağıdaki üç ana kaynaktan derlenmiştir:
+Kaggle kaynaklarının kimlikleri ve lisans koşulları repository içinde ayrıntılı
+olarak listelenmemiştir. Yeniden dağıtım veya ticari kullanım öncesinde orijinal
+kaynakların güncel şartları incelenmelidir.
 
-1. **Yerel Sınıf Veri Seti** (Google Drive)
-   - Akademik ortamda derlenen orijinal veri seti
-   - Doğrudan proje ekibi tarafından toplandı
+## Sınıflar ve Klasörler
 
-2. **Kaggle Atık Sınıflandırma Veri Setleri**
-   - Birden fazla Kaggle platformu veri seti kullanıldı
-   - Genel atık sınıflandırması özellikleri ile uyumludur
-
-3. **Ek Kaggle Veri Seti Desteği**
-   - Contributor: **Mehmet Yıldız**
-
-## Sınıf Yapısı
-
-Veri seti aşağıdaki 6 sınıfı içermektedir:
-
-```
+```text
 dataset/
-  ├── cardboard/    (Karton)
-  ├── glass/        (Cam)
-  ├── metal/        (Metal)
-  ├── paper/        (Kağıt)
-  ├── plastic/      (Plastik)
-  └── trash/        (Genel Çöp)
+├── cardboard/
+├── glass/
+├── metal/
+├── paper/
+├── plastic/
+└── trash/
 ```
 
-## Veri Seti Özellikleri
+Notebook, her sınıf için en fazla 1500 örnek kullanılacak şekilde dengeleme
+uygular. Bu bilgi bir üst sınırdır; sınıfların tam dağılımı notebook çalıştırma
+çıktısına göre değişebilir.
 
-- **Toplam görüntü sayısı**: Sınıf başına maksimum ~1500 görüntü
-- **Veri dengesi**: Tüm sınıflar dengeli dağılıma sahiptir
-- **Görüntü formatı**: JPG
-- **Arka plan işleme**: 
-  - Rembg kullanılan arka plan temizleme
-  - Siyah zemin simülasyonu (black background)
-  - Proje özel koşuluğu (kapalı siyah hazne)
+## Ön İşleme
 
-## Veri Ön İşleme
+Notebook'ta görülen pipeline şu adımları içerir:
 
-Eğitim sırasında uygulanan ön işleme adımları:
+- `rembg` ile arka plan temizleme
+- Siyah zemin simülasyonu
+- Rotation, shift ve zoom ile data augmentation
+- `fill_mode='constant'` ile siyah zemin korunumu
+- `224x224` boyutlandırma
+- `1/255` normalizasyonu
 
-1. **Arka Plan Temizleme**
-   - Orijinal görüntülerden nesneler izole edilmiş
-   - Rembg kütüphanesi kullanılan arka plan kaldırma
+Streamlit inference sırasında görüntü RGB'ye dönüştürülür, `224x224` boyutuna
+getirilir ve `1/255` ile normalize edilir.
 
-2. **Siyah Zemin Simülasyonu**
-   - Temizlenmiş nesneler siyah zemin üzerine yerleştirilmiş
-   - Kapalı hazne ortamını simüle etmek için tasarlanmıştır
+## Eğitim ve Değerlendirme
 
-3. **Veri Artırma (Data Augmentation)**
-   - Rotation: Rastgele döndürme
-   - Shift: Rastgele kaydırma
-   - Zoom: Rastgele yakınlaştırma
-   - Fill mode: `constant` (siyah zemin korunumu)
-   - Rescale: 1/255 normalizasyonu
+Notebook, train ve validation generator'ları kullanır. Eğitim sırasında
+`val_accuracy` izlenir; final değerlendirme hücresi validation subset'i
+üzerinden confusion matrix ve classification report üretir. Kayıtlı notebook
+çıktısında final raporun sayısal değerleri bulunmadığından burada ek metrik
+üretilmemiştir.
 
-4. **Boyut Standardizasyonu**
-   - Tüm görüntüler 224×224 piksel olarak yeniden boyutlandırılmıştır
-   - MobileNetV2 model girdisine uygun
+## Sınırlamalar
 
-## Eğitim/Doğrulama/Test Ayrımı
-
-Proje not defterinde (`notebooks/training_experiments.ipynb`) bölüm yapısında train/validation/test ayrımı açıklanmaktadır.
-
-## Lisans ve Yeniden Dağıtım
-
-**ÖNEMLİ NOT**: Veri seti üçüncü taraf kaynakları (özellikle Kaggle) içermektedir.
-
-- **Yerel veri seti**: Akademik araştırma için kullanılabilir
-- **Kaggle veri setleri**: Kaggle'ın Lisans Şartlarına tabi olup, bağlantılı kaynakları incelemelisiniz
-
-Ticari veya üretim amaçlı kullanım öncesinde:
-- Orijinal veri kaynakları için lisans şartlarını kontrol edin
-- Kaggle platformu lisans hükümlerine uyun
-
-## Verinin Nasıl Edinileceği
-
-### Google Colab Ortamında
-
-Not defteri (`notebooks/training_experiments.ipynb`) Colab üzerinde çalışacak şekilde tasarlanmıştır:
-
-```python
-# Google Drive bağlantısı
-from google.colab import drive
-drive.mount('/content/drive')
-
-# Yerel veri seti yolu
-drive_dataset_path = '/content/drive/My Drive/...'
-
-# Kaggle indirme adımları not defterinde belirtilmiştir
-```
-
-### Lokal Ortamda
-
-Veri seti bu repository'nin `dataset/` klasöründe mevcuttur:
-
-```bash
-git clone <repository-url>
-cd ai-geri-donusum-siniflandirma
-# dataset/ klasörü hazır
-```
-
-## Bilinen Sınırlamalar
-
-- **Kapalı ortam şartı**: Modeli eğitmek için siyah zemin simülasyonu yapılmıştır, açık ortam performansı sınırlı olabilir
-- **Işık koşulları**: Kontrollü ortam koşullarında eğitilmiş, değişken ışık koşullarında performans değişebilir
-- **Atık karmaşıklığı**: Karışık veya belirsiz atıklar (örn. çok materyalli ürünler) sınıflandırması zorlaştırabilir
-- **Domain bias**: Veri seti yapısı proje özeline optimize edilmiştir
-
-## İletişim
-
-Veri seti hakkında sorularınız için:
-- İlgili contributor'lara GitHub Issues üzerinden ulaşabilirsiniz
-- Not defterindeki bölümlerde detaylı açıklamalar mevcuttur
+- Veri seti siyah arka plan ve kontrollü çekim koşullarına göre hazırlanmıştır.
+- Karışık materyalli atıklar sınıflandırma açısından daha zor olabilir.
+- Üçüncü taraf veri setlerinin lisans ve yeniden dağıtım hakları ayrıca
+  doğrulanmalıdır.
