@@ -1,278 +1,112 @@
-# Katkıda Bulunma Rehberi
+# Katkıda Bulunma
 
-Proje hakkında önerileri ve katkıları için teşekkürler. Bu rehberi lütfen okuyun.
+Bu repository, küçük bir engineering ekibi tarafından sürdürülen bir bitirme
+projesidir. Katkıların odaklı, anlaşılır ve doğrulanabilir olması beklenir.
 
-## Davranış Kuralları
+## Çalışma Akışı
 
-Tüm katkılıyanlardan profesyonel ve saygılı bir ortam sağlamalarını bekliyoruz. Taciz, ayrımcılık veya disrespekt tolerans görmez.
-
-## Katkı Süreci
-
-### 1. Issue Açma
-
-Bir hata bulduysanız veya yeni bir özellik öneriliyorsanız:
-
-1. Mevcut issues'leri kontrol edin (benzer konu zaten açılmış mı?)
-2. Açık ve tanımlayıcı bir başlık kullanın
-3. Detaylı açıklama ekleyin:
-   - Neler başarısız oldu / ne önerildi?
-   - Hangi ortamda?
-   - Tekrarlama adımları (varsa)
-
-### 2. Branch Oluşturma
-
-Issues çözmek veya özellik eklemek için:
-
-```bash
-# Ana branch'in güncel olduğundan emin ol
-git checkout main
-git pull origin main
-
-# Açıklayıcı bir branch adı ile yeni branch oluştur
-git checkout -b feature/feature-name
-# veya
-git checkout -b fix/bug-name
+```text
+Issue → Branch → Geliştirme → Test → Pull Request → Review → Merge
 ```
 
-**Branch adlandırması kuralları**:
-- `feature/` — Yeni özellikler
-- `fix/` — Hata düzeltmeleri
-- `docs/` — Dokümantasyon
-- `refactor/` — Kod yeniden yapılandırması
-- `test/` — Test ekleme/güncelleme
+Bir değişikliğe başlamadan önce ilgili issue'yu inceleyin veya gerekliyse yeni
+bir issue açın. Normal koşullarda `main` branch'ine doğrudan push yapmayın.
 
-### 3. Geliştirme
+## Branch Kullanımı
+
+Branch adı kısa ve amacını açıklayıcı olmalıdır:
+
+- `feature/...` — yeni özellik
+- `fix/...` — hata düzeltmesi
+- `docs/...` — dokümantasyon
+- `refactor/...` — yapılandırma veya kod iyileştirmesi
+- `test/...` — test değişiklikleri
+
+## Geliştirme ve Test
+
+Runtime bağımlılıklarını kurmak için:
 
 ```bash
-# Sanal ortam oluştur ve etkinleştir
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# Bağımlılıkları yükle
 pip install -r requirements.txt
-
-# Değişikliklerinizi yapın
-# ... kodunuzu yazın ...
-
-# Testleri çalıştır
-python -m pytest tests/
-
-# Kodu kontrol et
-python -m flake8 --max-line-length=100 src/ tests/ app.py classifier.py
 ```
 
-### 4. Commit Yapma
-
-Anlamlı ve odaklı commit'ler yapın:
+Test ve lint araçlarını kurmak için:
 
 ```bash
-# Değişiklikleri stage et
-git add .
-
-# Açıklayıcı commit mesajı ile commit yap
-git commit -m "Fix: Görüntü ön işlemede normalizasyon hatası düzeltildi"
+pip install -r requirements-dev.txt
 ```
 
-**Commit mesajı kuralları**:
-- Başlık maksimum 50 karakter
-- Türkçe veya İngilizce (tutarlı olun)
-- Başlık: `Type: Açıklama` formatı
-  - `Fix:` — Hata düzeltme
-  - `Feature:` — Yeni özellik
-  - `Docs:` — Dokümantasyon
-  - `Refactor:` — Kod yeniden yapılandırması
-  - `Test:` — Test ekleme
-  - `Chore:` — Build, config, vb.
-
-### 5. Pull Request Açma
+Kod değişikliğinden sonra en azından şu kontrolleri çalıştırın:
 
 ```bash
-# Branch'inizi remote'a push edin
-git push origin feature/feature-name
-
-# GitHub üzerinde Pull Request oluşturun
+python -m pytest tests/ -v
+python -m flake8 app.py classifier.py src/ tests/
 ```
 
-**PR açıklaması şunları içermeli**:
-- Hangi issue'yu çözdüğü (#123)
-- Değişikliklerin özeti
-- Test etme talimatları (varsa)
-- Ekran görüntüleri (UI değişikliği varsa)
+Modeli yeniden eğiten veya büyük veri seti indiren testler normal test akışına
+eklenmemelidir. Davranış değişiklikleri için hafif ve tekrarlanabilir testler
+ekleyin. Streamlit arayüzünde değişiklik varsa `streamlit run app.py` ile
+uygulamanın başlatılabildiğini de kontrol edin.
 
-Örnek:
+## Commit'ler
 
-```markdown
-## Açıklama
-Görüntü ön işlemede normalizasyon hatası düzeltilmiştir.
+Commit'ler tek bir amaca odaklanmalı ve ne değiştiğini anlatmalıdır. Büyük,
+ilgisiz değişiklikleri aynı commit'te birleştirmeyin.
 
-## Çözdüğü Issue
-Closes #42
+## Pull Request
 
-## Değişiklikler
-- `classifier.py` 'de normalizasyon hesaplaması düzeltildi
-- Test case'leri güncellendi
+PR açıklaması şu soruları yanıtlamalıdır:
 
-## Test Edildi
-- [x] Lokal ortamda test edildi
-- [x] Test suite geçti
-- [x] Streamlit uygulaması çalışıyor
-```
+- Ne değişti?
+- Neden değişti?
+- Nasıl test edildi?
+- Davranış veya dokümantasyon nasıl etkilendi?
 
-### 6. Review ve Merge
+UI değişikliklerinde ekran görüntüsü, hata düzeltmelerinde tekrarlama ve
+doğrulama adımları ekleyin.
 
-- Kod review yapılacak
-- Öneriler yapılabilir
-- Onaylandıktan sonra main branch'e merge edilir
+## AI Destekli Geliştirme
 
-## Değiştirilemez Dosyalar
-
-Aşağıdaki dosyalar proje geçmişinin bir parçası olduğundan doğrudan değiştirilmez:
-
-- `dataset/` — Veri seti (yalnızca genişletilir)
-- `notebooks/training_experiments.ipynb` — Orijinal eğitim not defteri
-- `model/akalli_kutu_model.keras` — Eğitilmiş model
-
-**Yeni deneyler için**: `experiments/` veya benzeri ayrı klasör kullanın
-
-## Proje Standartları
-
-### Kod Kalitesi
-
-- Anlaşılır ve okunabilir kod yazın
-- Gereksiz yere karmaşıklaştırmayın
-- Yorum yazın (Türkçe tercih edilir), ancak yalnızca gerekli yerlerde
-
-Örnek:
-
-```python
-def preprocess_image(image: Image.Image) -> np.ndarray:
-    """Görüntüyü MobileNetV2 girdisine hazırla."""
-    # PNG görselindeki alfa kanalını RGB'ye dönüştür
-    if image.mode != "RGB":
-        image = image.convert("RGB")
-    
-    image = image.resize((224, 224))
-    img_array = img_to_array(image) / 255.0
-    return np.expand_dims(img_array, axis=0)
-```
-
-### Dokümantasyon
-
-- Değişiklikler README veya ilgili dokümantasyonu etkiliyorsa, güncelle
-- Yeni fonksiyon veya sınıf ekliyorsanız, docstring ekle
-- Türkçe dokümantasyonda gramatikal ve terminolojik tutarlılık sağla
-
-### Testler
-
-- Yeni özellik ekleniyorsa, test case'i de ekle
-- Mevcut testler geçmeli
-- Bütün modeli yeniden eğiten test ekleme
-
-## Babintech AI Geliştirme Prensibi
-
-Babintech'te AI tabanlı geliştirmede şu prensipler uygulanır:
+Babintech çalışma prensibi:
 
 **Düşün → Dene → Sor → Doğrula → Açıkla**
 
-1. **Düşün**: Sorunu anla, çözümü planla
-2. **Dene**: Deney yap, kod yaz, test et
-3. **Sor**: Emin değilsen, soru sor (Issues, Discussions)
-4. **Doğrula**: Sonuçların doğruluğunu kontrol et
-5. **Açıkla**: Değişiklikleri açık şekilde dokümante et
+AI ve LLM araçları kullanılabilir. Ancak katkıda bulunan kişi:
 
-### LLM/AI Araçları Kullanımı
+- üretilen kodu anlamalı,
+- çıktıyı repository bağlamında doğrulamalı,
+- testleri çalıştırmalı,
+- review sırasında yapılan tercihi açıklayabilmelidir.
 
-LLM (ChatGPT, Claude, Copilot vb.) veya AI araçları kullanabilirsiniz. Ancak:
+Anlaşılmayan veya doğrulanmamış kod merge edilmemelidir.
 
-- ✅ Üretilen kod ve açıklamaları **anlamalısınız**
-- ✅ Kodun doğruluğunu **test etmelisiniz**
-- ✅ PR review'de **açıklayabilmelisiniz**
-- ❌ Anlamadığınız kodu merge etmeyin
-- ❌ Doğrulamasız AI çıktısı kullanmayın
+## İletişim
 
-## Geliştirme Ortamı Kurulumu
+Issue, PR ve review yorumlarında kısa, açık ve profesyonel bir iletişim
+kullanın. Belirsiz bir teknik veya tarihsel bilgi varsa tahmin etmek yerine
+kanıtını belirtin ya da soru sorun.
 
-```bash
-# Repository'yi klonla
-git clone https://github.com/Babintech/ai-geri-donusum-siniflandirma.git
-cd ai-geri-donusum-siniflandirma
+## Mehmet Yıldız'ın GitHub Contributor Attribution'ı
 
-# Sanal ortam oluştur
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+Repository Git geçmişinde Mehmet'e ait bir commit bulunmaktadır:
 
-# Bağımlılıkları yükle
-pip install -r requirements.txt
+- Commit: `d7a60a2` — `katkı için veri seti yüklenmesi`
+- Author: `mhmety <mehmet.yildiz.bst@gmail.com>`
+- Committer: aynı kimlik
+- PR: [#6](https://github.com/Babintech/ai-geri-donusum-siniflandirma/pull/6)
+- PR başlığı: `katkı için veri seti yüklenmesi`
+- Merge commit: `8d9f88f`
 
-# (Opsiyonel) Geliştirme bağımlılıkları
-pip install pytest flake8
-```
+Commit `main` geçmişindedir; dolayısıyla sorun commit'in merge edilmemesi
+değildir. GitHub API commit için author hesabı döndürmemekte ve repository'nin
+contributor API çıktısında `mhmety` görünmemektedir. Bu gözlem, commit'te
+kullanılan `mehmet.yildiz.bst@gmail.com` adresinin Mehmet'in GitHub hesabına
+bağlanmamış, doğrulanmamış veya GitHub tarafından attribution için eşleştirilememiş
+olabileceğini gösterir. Kesin hesap ayarı GitHub kullanıcı hesabından kontrol
+edilmelidir.
 
-## Testleri Çalıştırma
-
-```bash
-# Tüm testleri çalıştır
-python -m pytest tests/
-
-# Spesifik test dosyasını çalıştır
-python -m pytest tests/test_inference.py
-
-# Verbose mode
-python -m pytest tests/ -v
-
-# Coverage raporu
-python -m pytest tests/ --cov=src --cov-report=html
-```
-
-## Streamlit Uygulamasını Test Etme
-
-```bash
-# Uygulamayı çalıştır
-streamlit run app.py
-
-# Tarayıcıda açılır: http://localhost:8501
-# Değişiklikleri test et
-```
-
-## Sıkça Sorulan Sorular (SSS)
-
-### Modeli yeniden eğitebilir miyim?
-
-Evet, ancak:
-- `notebooks/training_experiments.ipynb` not defterini kullanın
-- Yalnızca gerçek ihtiyaç varsa
-- PR'de neden eğitilmiş olduğunu açıklayın
-
-### Yeni bağımlılık ekleyebilir miyim?
-
-Evet, ancak:
-- PR açıklamasında gerekçesini belirt
-- `requirements.txt` güncellenmelidir
-- Paket boyutuna dikkat et (Streamlit Cloud limitleri)
-
-### Model dosyasını değiştirebilir miyim?
-
-Dikkat edin:
-- Mevcut `app.py` ile uyumlu olmalı
-- Test edilmiş olmalı
-- PR'de test sonuçlarını ekle
-
-### Main branch'e doğrudan push edebilir miyim?
-
-**HAYIR** — Main branch korumalı olup, sadece review edilen PR'ler merge edilebilir.
-
-## Desteği Alma
-
-Sorularınız varsa:
-
-- GitHub Issues'i kullanın (herkese açık soru için)
-- GitHub Discussions (tartışma ve fikir paylaşımı için)
-- Code review sırasında soru sorun
-
-## Teşekkür
-
-Projeye katkı veren herkese teşekkür ederiz! 🙏
-
----
-
-**Son Not**: Bu proje Babintech'in academic ve professional geçmişini yansıtır. Geçmişini korurken, profesyonel standartlara uygun geliştirmeler yapıyoruz.
+Güvenli çözüm, Mehmet'in bu e-posta adresini GitHub hesabına ekleyip doğrulaması
+veya bundan sonraki commit'lerde hesabına bağlı bir GitHub noreply adresi
+kullanmasıdır. Geçmişi rewrite etmek, force push yapmak veya eski commit'leri
+otomatik olarak değiştirmek bu repository için önerilmez.
